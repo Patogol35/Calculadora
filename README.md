@@ -52,19 +52,17 @@ JavaScript
 
 1. Clona el repositorio:
 
-git clone https://github.com/Patogol35/calculadora
+https://github.com/Patogol35/Calculadora
 
 2. Ingresa a la carpeta del proyecto:
 
-cd calculadora
+cd Calculadora
 
 3. Instala las dependencias:
 
 npm install
 
 4. Inicia la aplicación en modo desarrollo:
-
-
 
 npm run dev
 
