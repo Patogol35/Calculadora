@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Box, CssBaseline, createTheme, ThemeProvider } from "@mui/material";
 import Calculator from "./components/Calculator";
+
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
+
   const theme = createTheme({
     palette: {
       mode: darkMode ? "dark" : "light",
@@ -11,6 +13,7 @@ export default function App() {
     },
     typography: { fontFamily: "Poppins, sans-serif" },
   });
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
