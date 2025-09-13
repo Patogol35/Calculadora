@@ -1,4 +1,4 @@
-import { Grid, Paper, Collapse, Button } from "@mui/material";
+import { Grid, Button, Collapse } from "@mui/material";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
@@ -19,42 +19,35 @@ const advancedButtons = [
 export default function Keypad({ handleClick, darkMode, theme }) {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  const getColor = (btn) => {
+    if (btn === "=") return "primary";
+    if (["/", "*", "-", "+", "^", "√"].includes(btn)) return "secondary";
+    if (btn === "AC") return "error";
+    if (btn === "DEL") return "warning";
+    return "inherit";
+  };
+
   return (
     <>
       <Grid container spacing={1}>
         {basicButtons.flat().map((btn, i) => (
-          <Grid
-            item
-            xs={btn === "=" ? 6 : 3} // ✅ "=" ocupa doble ancho
-            key={i}
-          >
-            <motion.div whileTap={{ scale: 0.9 }}>
-              <Paper
+          <Grid item xs={btn === "=" ? 6 : 3} key={i}>
+            <motion.div whileTap={{ scale: 0.85 }}>
+              <Button
+                fullWidth
+                variant={btn === "=" ? "contained" : "outlined"}
+                color={getColor(btn)}
                 onClick={() => handleClick(btn)}
                 sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: { xs: 55, sm: 60 },
-                  borderRadius: 3,
-                  cursor: "pointer",
+                  height: { xs: 65, sm: 70 },
+                  borderRadius: "16px",
                   fontWeight: "bold",
-                  bgcolor:
-                    btn === "=" ? theme.palette.primary.main : "transparent",
-                  color:
-                    btn === "=" ? "#fff" : theme.palette.text.primary,
-                  "&:hover": {
-                    bgcolor:
-                      btn === "="
-                        ? theme.palette.primary.dark
-                        : darkMode
-                        ? "rgba(255,255,255,0.1)"
-                        : "rgba(0,0,0,0.05)",
-                  },
+                  fontSize: "1.1rem",
+                  textTransform: "none",
                 }}
               >
                 {btn}
-              </Paper>
+              </Button>
             </motion.div>
           </Grid>
         ))}
@@ -63,40 +56,34 @@ export default function Keypad({ handleClick, darkMode, theme }) {
       {/* Botón para mostrar funciones avanzadas */}
       <Button
         fullWidth
-        variant="outlined"
+        variant="text"
         sx={{ mt: 2 }}
         onClick={() => setShowAdvanced(!showAdvanced)}
       >
-        {showAdvanced ? "Ocultar funciones avanzadas" : "Mostrar funciones avanzadas"}
+        {showAdvanced ? "Ocultar funciones avanzadas" : "Funciones avanzadas"}
       </Button>
 
-      {/* Collapse para mostrar/ocultar */}
-      <Collapse in={showAdvanced} sx={{ mt: 2 }}>
+      {/* Collapse con funciones avanzadas */}
+      <Collapse in={showAdvanced} sx={{ mt: 1 }}>
         <Grid container spacing={1}>
           {advancedButtons.flat().map((btn, i) => (
             <Grid item xs={3} key={i}>
-              <motion.div whileTap={{ scale: 0.9 }}>
-                <Paper
+              <motion.div whileTap={{ scale: 0.85 }}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  color="secondary"
                   onClick={() => handleClick(btn)}
                   sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: { xs: 55, sm: 60 },
-                    borderRadius: 3,
-                    cursor: "pointer",
+                    height: { xs: 65, sm: 70 },
+                    borderRadius: "16px",
                     fontWeight: "bold",
-                    bgcolor: "transparent",
-                    color: theme.palette.text.primary,
-                    "&:hover": {
-                      bgcolor: darkMode
-                        ? "rgba(255,255,255,0.1)"
-                        : "rgba(0,0,0,0.05)",
-                    },
+                    fontSize: "1rem",
+                    textTransform: "none",
                   }}
                 >
                   {btn}
-                </Paper>
+                </Button>
               </motion.div>
             </Grid>
           ))}
