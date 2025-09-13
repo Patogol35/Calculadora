@@ -1,5 +1,6 @@
 import { Grid, Paper } from "@mui/material";
 import { motion } from "framer-motion";
+
 const buttons = [
   ["7", "8", "9", "/"],
   ["4", "5", "6", "*"],
@@ -9,6 +10,7 @@ const buttons = [
   ["sin", "cos", "tan", "log"],
   ["π", "e", "AC", "DEL"],
 ];
+
 export default function Keypad({ handleClick, darkMode, theme }) {
   return (
     <Grid container spacing={1}>
