@@ -22,7 +22,6 @@ export default function App() {
           minHeight: "100vh",
           display: "flex",
           justifyContent: "center",
-          // 👇 en desktop pegamos arriba, en mobile centrado
           alignItems: { xs: "center", md: "flex-start" },
           background: darkMode
             ? "linear-gradient(135deg, #1f1c2c, #928dab)"
