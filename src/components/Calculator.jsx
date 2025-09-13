@@ -11,6 +11,17 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState([]);
 
+  // ✅ cargar historial desde localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("calc-history");
+    if (saved) setHistory(JSON.parse(saved));
+  }, []);
+
+  // ✅ guardar historial en localStorage
+  useEffect(() => {
+    localStorage.setItem("calc-history", JSON.stringify(history));
+  }, [history]);
+
   const handleClick = (value) => {
     if (value === "=") {
       try {
@@ -30,7 +41,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
     }
   };
 
-  // ✅ Soporte de teclado físico
+  // ✅ soporte teclado físico
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.key >= "0" && e.key <= "9") || "+-*/().".includes(e.key)) {
@@ -52,15 +63,19 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
       transition={{ duration: 0.5 }}
     >
       <Paper
-        elevation={10}
+        elevation={12}
         sx={{
-          width: { xs: "95vw", sm: 360 },
-          p: 3,
+          width: { xs: "100%", sm: 380 },
+          maxWidth: "100%",
+          p: 2,
           borderRadius: 4,
           background: darkMode
-            ? "rgba(40,40,40,0.85)"
-            : "rgba(255,255,255,0.7)",
-          backdropFilter: "blur(12px)",
+            ? "rgba(30,30,30,0.9)"
+            : "rgba(255,255,255,0.95)",
+          backdropFilter: "blur(16px)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
         }}
       >
         {/* Header */}
@@ -69,7 +84,6 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 2,
           }}
         >
           <Typography variant="h6" fontWeight="bold">
@@ -80,14 +94,14 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
           </IconButton>
         </Box>
 
-        {/* Historial */}
-        <History history={history} darkMode={darkMode} />
-
         {/* Display */}
         <Display value={input} darkMode={darkMode} />
 
-        {/* Keypad */}
+        {/* Teclado */}
         <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
+
+        {/* Historial (colapsa en mobile) */}
+        <History history={history} darkMode={darkMode} />
       </Paper>
     </motion.div>
   );
