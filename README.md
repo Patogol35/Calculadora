@@ -34,17 +34,17 @@ https://calculadorajorgepatricio.vercel.app/
 
 ---
 
-⚙️ Tecnologías utilizadas
+⚙️ Tecnologías utilizadas 
 
-React (con Vite)
+- React (con Vite)
 
-Material UI
+- JavaScript
 
-Framer Motion
+- MUI (Material UI)
 
-Math.js
+- Framer Motion
 
-JavaScript
+- mathjs
 
 ---
 
