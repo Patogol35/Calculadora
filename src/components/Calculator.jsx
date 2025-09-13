@@ -1,10 +1,5 @@
-import { useState } from "react";
-import {
-  Box,
-  Typography,
-  IconButton,
-  Paper,
-} from "@mui/material";
+import { useState, useEffect } from "react";
+import { Box, Typography, IconButton, Paper } from "@mui/material";
 import { DarkMode, LightMode } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import * as math from "mathjs";
@@ -21,7 +16,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
       try {
         let expr = input.replace("√", "sqrt").replace("π", "pi");
         const result = math.evaluate(expr).toString();
-        setHistory([`${input} = ${result}`, ...history]); // guardar en historial
+        setHistory([`${input} = ${result}`, ...history]);
         setInput(result);
       } catch {
         setInput("Error");
@@ -34,6 +29,21 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
       setInput(input + value);
     }
   };
+
+  // ✅ Soporte de teclado físico
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.key >= "0" && e.key <= "9") || "+-*/().".includes(e.key)) {
+        setInput((prev) => prev + e.key);
+      } else if (e.key === "Enter") {
+        handleClick("=");
+      } else if (e.key === "Backspace") {
+        handleClick("DEL");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [input]);
 
   return (
     <motion.div
@@ -77,11 +87,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
         <Display value={input} darkMode={darkMode} />
 
         {/* Keypad */}
-        <Keypad
-          handleClick={handleClick}
-          darkMode={darkMode}
-          theme={theme}
-        />
+        <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
       </Paper>
     </motion.div>
   );
