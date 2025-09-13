@@ -1,25 +1,24 @@
-import { Paper, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
-export default function Display({ expression, result }) {
-  const formatNumber = (num) => {
-    if (!num || isNaN(num)) return num;
-    return Number(num).toLocaleString("en-US");
-  };
-
+export default function Display({ value, darkMode }) {
   return (
-    <Paper
-      elevation={3}
+    <Box
       sx={{
         p: 2,
-        textAlign: "right",
         mb: 2,
-        bgcolor: "background.paper",
+        borderRadius: 2,
+        bgcolor: darkMode ? "#121212" : "#f0f0f0",
+        textAlign: "right",
+        minHeight: 70,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        overflowX: "auto",
       }}
     >
-      <Typography variant="h6">{expression || "0"}</Typography>
-      <Typography variant="h5" sx={{ color: "primary.main" }}>
-        {formatNumber(result)}
+      <Typography variant="h5" sx={{ wordBreak: "break-word" }}>
+        {value || "0"}
       </Typography>
-    </Paper>
+    </Box>
   );
 }
