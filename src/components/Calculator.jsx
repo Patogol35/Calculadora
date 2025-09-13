@@ -30,22 +30,129 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
     localStorage.setItem("calc-history", JSON.stringify(history));
   }, [history]);
 
+  // --- función que convierte expresiones con "√" a sqrt(...) manejando varios casos ---
+  const formatExpression = (raw) => {
+    if (!raw) return "";
+    // quitar espacios y normalizar pi
+    let s = raw.replace(/\s+/g, "");
+    s = s.replace(/π/g, "pi");
+
+    // transformaciones repetidas hasta no quedar '√' (maneja anidado)
+    let prev = null;
+    while (s.includes("√") && s !== prev) {
+      prev = s;
+      let out = "";
+      let i = 0;
+      const n = s.length;
+      while (i < n) {
+        const ch = s[i];
+        if (ch === "√") {
+          out += "sqrt(";
+          i++;
+          if (i >= n) {
+            out += ")";
+            break;
+          }
+
+          // caso: √( ... ) -> copiar contenido de paréntesis completo
+          if (s[i] === "(") {
+            let bal = 0;
+            while (i < n) {
+              out += s[i];
+              if (s[i] === "(") bal++;
+              else if (s[i] === ")") {
+                bal--;
+                if (bal === 0) {
+                  i++;
+                  break;
+                }
+              }
+              i++;
+            }
+            out += ")";
+            continue;
+          }
+
+          // caso: √sin(9) ó √cos( ... ) (nombre de función)
+          if (/[a-zA-Z]/.test(s[i])) {
+            let name = "";
+            while (i < n && /[a-zA-Z]/.test(s[i])) {
+              name += s[i];
+              i++;
+            }
+            // si viene función con paréntesis, copiar hasta cerrar
+            if (i < n && s[i] === "(") {
+              out += name + "(";
+              i++; // saltar '('
+              let bal = 1;
+              while (i < n) {
+                out += s[i];
+                if (s[i] === "(") bal++;
+                else if (s[i] === ")") {
+                  bal--;
+                  if (bal === 0) {
+                    i++;
+                    break;
+                  }
+                }
+                i++;
+              }
+              out += ")";
+              continue;
+            } else {
+              // nombre simple (ej: pi o e)
+              out += name + ")";
+              continue;
+            }
+          }
+
+          // caso: número (posible decimal)
+          let token = "";
+          while (i < n && /[0-9.]/.test(s[i])) {
+            token += s[i];
+            i++;
+          }
+          if (token.length) {
+            out += token + ")";
+            continue;
+          }
+
+          // fallback: cerrar si no se pudo identificar
+          out += ")";
+        } else {
+          out += ch;
+          i++;
+        }
+      }
+      s = out;
+    }
+
+    // insertar multiplicación implícita antes de sqrt si hace falta (ej 2sqrt(...) => 2*sqrt(...))
+    s = s.replace(/([0-9a-zA-Z\)])(?=sqrt\()/g, "$1*");
+
+    return s;
+  };
+
   const handleClick = (value) => {
     if (value === "=") {
       try {
-        let expr = input.replace("√", "sqrt").replace("π", "pi");
+        const expr = formatExpression(input); // aquí convertimos √ correctamente
+        // console.log("expr para evaluar:", expr);
         const result = math.evaluate(expr).toString();
         setHistory([`${input} = ${result}`, ...history]);
         setInput(result);
-      } catch {
+      } catch (err) {
+        console.error("Error evaluating:", err);
         setInput("Error");
+        // opcional: limpiar después de 1.5s
+        setTimeout(() => setInput(""), 1500);
       }
     } else if (value === "AC") {
       setInput("");
     } else if (value === "DEL") {
-      setInput(input.slice(0, -1));
+      setInput((prev) => prev.slice(0, -1));
     } else {
-      setInput(input + value);
+      setInput((prev) => prev + value);
     }
   };
 
@@ -68,7 +175,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [input]);
+  }, [input, history]);
 
   return (
     <motion.div
@@ -82,7 +189,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
           width: "100%",
           maxWidth: isDesktop ? 900 : 400,
           margin: "auto",
-          mt: { xs: 0, md: 4 }, // 👈 en desktop queda con un margen top
+          mt: { xs: 0, md: 4 },
           p: 2,
           borderRadius: 4,
           background: darkMode
@@ -178,4 +285,4 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
       </Paper>
     </motion.div>
   );
-}
+                   }
