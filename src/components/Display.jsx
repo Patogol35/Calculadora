@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material";
+
 export default function Display({ value, darkMode }) {
   return (
     <Box
