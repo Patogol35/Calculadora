@@ -1,67 +1,65 @@
 import { useState, useEffect, useCallback } from "react";
-import { evaluate, format } from "mathjs";
+import * as math from "mathjs";
+import { formatExpression } from "../utils/formatExpression";
 
 export default function useCalculator() {
-  const [expression, setExpression] = useState("");
-  const [result, setResult] = useState("");
-  const [history, setHistory] = useState(() => {
-    return JSON.parse(localStorage.getItem("calcHistory")) || [];
-  });
+  const [input, setInput] = useState("");
+  const [history, setHistory] = useState([]);
 
-  const formatExpression = useCallback((expr) => {
-    let formatted = expr.replace(/√(\d+(\.\d+)?)/g, "sqrt($1)");
-    while (formatted.includes("√(")) {
-      formatted = formatted.replace(/√\(([^()]+)\)/g, "sqrt($1)");
-    }
-    return formatted;
+  // cargar historial
+  useEffect(() => {
+    const saved = localStorage.getItem("calc-history");
+    if (saved) setHistory(JSON.parse(saved));
   }, []);
 
-  const calculateResult = useCallback(() => {
-    try {
-      const formattedExpression = formatExpression(expression);
-      const evalResult = evaluate(formattedExpression);
-      const formattedResult = format(evalResult, { precision: 12 });
-      setResult(formattedResult);
+  // guardar historial
+  useEffect(() => {
+    localStorage.setItem("calc-history", JSON.stringify(history));
+  }, [history]);
 
-      const newHistory = [
-        { expr: expression, res: formattedResult },
-        ...history,
-      ].slice(0, 10);
-      setHistory(newHistory);
-      localStorage.setItem("calcHistory", JSON.stringify(newHistory));
-    } catch {
-      setResult("Error");
+  const calculate = useCallback(() => {
+    try {
+      const expr = formatExpression(input);
+      const result = math.evaluate(expr).toString();
+      setHistory([`${input} = ${result}`, ...history.slice(0, 9)]);
+      setInput(result);
+    } catch (err) {
+      setInput("Error");
+      setTimeout(() => setInput(""), 1500);
     }
-  }, [expression, history, formatExpression]);
+  }, [input, history]);
 
   const handleClick = (value) => {
-    if (value === "C") {
-      setExpression("");
-      setResult("");
-    } else if (value === "=") {
-      calculateResult();
+    if (value === "=") {
+      calculate();
+    } else if (value === "AC") {
+      setInput("");
+    } else if (value === "DEL") {
+      setInput((prev) => prev.slice(0, -1));
     } else {
-      setExpression((prev) => prev + value);
+      setInput((prev) => prev + value);
     }
   };
 
-  const handleKeyDown = useCallback(
-    (event) => {
-      const { key } = event;
-      if ((/[0-9+\-*/().]/.test(key)) || key === "Enter" || key === "Backspace") {
-        event.preventDefault();
-        if (key === "Enter") calculateResult();
-        else if (key === "Backspace") setExpression((prev) => prev.slice(0, -1));
-        else setExpression((prev) => prev + key);
-      }
-    },
-    [calculateResult]
-  );
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem("calc-history");
+  };
 
+  // teclado físico
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.key >= "0" && e.key <= "9") || "+-*/().".includes(e.key)) {
+        setInput((prev) => prev + e.key);
+      } else if (e.key === "Enter") {
+        calculate();
+      } else if (e.key === "Backspace") {
+        setInput((prev) => prev.slice(0, -1));
+      }
+    };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
+  }, [calculate]);
 
-  return { expression, result, history, handleClick, setExpression };
+  return { input, setInput, history, handleClick, clearHistory };
 }
