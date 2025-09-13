@@ -29,7 +29,11 @@ export default function App() {
           p: 2,
         }}
       >
-        <Calculator theme={theme} darkMode={darkMode} setDarkMode={setDarkMode} />
+        <Calculator
+          theme={theme}
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+        />
       </Box>
     </ThemeProvider>
   );
