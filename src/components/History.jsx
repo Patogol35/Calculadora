@@ -1,6 +1,6 @@
 import { Box, Typography, Paper } from "@mui/material";
 
-export default function History({ history, darkMode }) {
+export default function History({ history, darkMode, onSelect }) {
   return (
     <Paper
       sx={{
@@ -12,9 +12,6 @@ export default function History({ history, darkMode }) {
         overflowY: "auto",
       }}
     >
-      <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: "bold" }}>
-        Historial
-      </Typography>
       {history.length === 0 ? (
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Sin operaciones aún...
@@ -24,7 +21,13 @@ export default function History({ history, darkMode }) {
           <Typography
             key={index}
             variant="body2"
-            sx={{ textAlign: "right", wordBreak: "break-word" }}
+            sx={{
+              textAlign: "right",
+              wordBreak: "break-word",
+              cursor: "pointer",
+              "&:hover": { color: "primary.main" },
+            }}
+            onClick={() => onSelect(item)}
           >
             {item}
           </Typography>
