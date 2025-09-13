@@ -7,7 +7,7 @@ Incluye funciones avanzadas, historial persistente y soporte para teclado físic
 
 Ver la aplicación desplegada en Vercel:
 
-👉 https://jorgepatriciosantamariacherrezcalc.vercel.app/
+https://calculadorajorgepatricio.vercel.app/
 
 
 ---
