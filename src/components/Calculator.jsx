@@ -48,7 +48,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
           }}
         >
           <Typography variant="h6" fontWeight="bold">
-            ⚡ Calculadora Pro
+            ⚡ Calculadora Jorge Patricio Santamaría Cherrez
           </Typography>
           <IconButton onClick={() => setDarkMode(!darkMode)}>
             {darkMode ? <LightMode /> : <DarkMode />}
