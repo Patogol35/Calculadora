@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { ThemeProvider, createTheme, CssBaseline, IconButton, Box } from "@mui/material";
-import Calculator from "./Calculator";
-import { Brightness4, Brightness7 } from "@mui/icons-material";
+import { Box, CssBaseline, createTheme, ThemeProvider } from "@mui/material";
+import Calculator from "./components/Calculator";
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
 
   const theme = createTheme({
-    palette: { mode: darkMode ? "dark" : "light" },
-    typography: {
-      fontFamily: "'Poppins', sans-serif",
+    palette: {
+      mode: darkMode ? "dark" : "light",
+      primary: { main: "#6C63FF" },
+      secondary: { main: "#FF6584" },
     },
+    typography: { fontFamily: "Poppins, sans-serif" },
   });
 
   return (
@@ -20,22 +21,15 @@ export default function App() {
         sx={{
           minHeight: "100vh",
           display: "flex",
-          alignItems: "center",
           justifyContent: "center",
+          alignItems: "center",
           background: darkMode
-            ? "linear-gradient(135deg,#0f2027,#203a43,#2c5364)"
-            : "linear-gradient(135deg,#ece9e6,#ffffff)",
+            ? "linear-gradient(135deg, #1f1c2c, #928dab)"
+            : "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
           p: 2,
         }}
       >
-        <IconButton
-          onClick={() => setDarkMode(!darkMode)}
-          sx={{ position: "absolute", top: 20, right: 20 }}
-          color="inherit"
-        >
-          {darkMode ? <Brightness7 /> : <Brightness4 />}
-        </IconButton>
-        <Calculator darkMode={darkMode} />
+        <Calculator theme={theme} darkMode={darkMode} setDarkMode={setDarkMode} />
       </Box>
     </ThemeProvider>
   );
