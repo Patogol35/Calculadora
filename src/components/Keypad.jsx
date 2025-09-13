@@ -8,7 +8,7 @@ const basicButtons = [
   ["1", "2", "3", "-"],
   ["0", ".", "=", "+"],
   ["(", ")", "^", "√"],
-  ["AC", "DEL"],
+  ["%", "AC", "DEL"],
 ];
 
 const advancedButtons = [
@@ -16,12 +16,12 @@ const advancedButtons = [
   ["π", "e", "ln", "!"],
 ];
 
-export default function Keypad({ handleClick, darkMode, theme }) {
+export default function Keypad({ handleClick }) {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const getColor = (btn) => {
     if (btn === "=") return "primary";
-    if (["/", "*", "-", "+", "^", "√"].includes(btn)) return "secondary";
+    if (["/", "*", "-", "+", "^", "√", "%"].includes(btn)) return "secondary";
     if (btn === "AC") return "error";
     if (btn === "DEL") return "warning";
     return "inherit";
@@ -39,7 +39,7 @@ export default function Keypad({ handleClick, darkMode, theme }) {
                 color={getColor(btn)}
                 onClick={() => handleClick(btn)}
                 sx={{
-                  height: { xs: 65, sm: 70 },
+                  height: { xs: 60, sm: 70 },
                   borderRadius: "16px",
                   fontWeight: "bold",
                   fontSize: "1.1rem",
@@ -53,7 +53,6 @@ export default function Keypad({ handleClick, darkMode, theme }) {
         ))}
       </Grid>
 
-      {/* Botón para mostrar funciones avanzadas */}
       <Button
         fullWidth
         variant="text"
@@ -63,7 +62,6 @@ export default function Keypad({ handleClick, darkMode, theme }) {
         {showAdvanced ? "Ocultar funciones avanzadas" : "Funciones avanzadas"}
       </Button>
 
-      {/* Collapse con funciones avanzadas */}
       <Collapse in={showAdvanced} sx={{ mt: 1 }}>
         <Grid container spacing={1}>
           {advancedButtons.flat().map((btn, i) => (
@@ -75,7 +73,7 @@ export default function Keypad({ handleClick, darkMode, theme }) {
                   color="secondary"
                   onClick={() => handleClick(btn)}
                   sx={{
-                    height: { xs: 65, sm: 70 },
+                    height: { xs: 60, sm: 70 },
                     borderRadius: "16px",
                     fontWeight: "bold",
                     fontSize: "1rem",
