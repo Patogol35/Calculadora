@@ -1,12 +1,72 @@
-# React + Vite
+Calculadora Científica
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web desarrollada con React y desplegada en Vercel que permite realizar cálculos básicos y científicos de forma rápida, moderna y visual.
+Incluye funciones avanzadas, historial persistente y soporte para teclado físico.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Ver la aplicación desplegada en Vercel:
 
-## Expanding the ESLint configuration
+👉 https://jorgepatriciosantamariacherrezcalc.vercel.app/
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+---
+
+✨ Funcionalidades
+
+- Cálculos básicos: suma, resta, multiplicación y división.
+
+- Funciones científicas: sin, cos, tan, log, √, potencias, π y más.
+
+- Historial persistente: guarda los cálculos usando localStorage.
+
+- Reutilización de operaciones anteriores desde el historial.
+
+- Modo claro/oscuro con toggle dinámico.
+
+- Animaciones fluidas con Framer Motion.
+
+- Separadores de miles en los resultados.
+
+- Feedback visual en botones y display.
+
+- Responsive: diseño adaptable a móviles y escritorio.
+
+---
+
+⚙️ Tecnologías utilizadas
+
+React (con Vite)
+
+Material UI
+
+Framer Motion
+
+Math.js
+
+JavaScript
+
+---
+
+📦 Instalación y ejecución
+
+1. Clona el repositorio:
+
+git clone https://github.com/Patogol35/calculadora
+
+2. Ingresa a la carpeta del proyecto:
+
+cd calculadora
+
+3. Instala las dependencias:
+
+npm install
+
+4. Inicia la aplicación en modo desarrollo:
+
+
+
+npm run dev
+
+
+---
