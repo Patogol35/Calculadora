@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, IconButton, Paper, useMediaQuery } from "@mui/material";
-import { DarkMode, LightMode } from "@mui/icons-material";
+import {
+  Box,
+  Typography,
+  IconButton,
+  Paper,
+  useMediaQuery,
+  Button,
+} from "@mui/material";
+import { DarkMode, LightMode, DeleteForever } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import * as math from "mathjs";
 import Display from "./Display";
@@ -10,15 +17,15 @@ import History from "./History";
 export default function Calculator({ theme, darkMode, setDarkMode }) {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState([]);
-  const isDesktop = useMediaQuery("(min-width: 768px)"); // ✅ detectar landscape/desktop
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  // cargar historial desde localStorage
+  // cargar historial
   useEffect(() => {
     const saved = localStorage.getItem("calc-history");
     if (saved) setHistory(JSON.parse(saved));
   }, []);
 
-  // guardar historial en localStorage
+  // guardar historial
   useEffect(() => {
     localStorage.setItem("calc-history", JSON.stringify(history));
   }, [history]);
@@ -42,7 +49,13 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
     }
   };
 
-  // soporte teclado físico
+  // borrar historial
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem("calc-history");
+  };
+
+  // soporte teclado
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.key >= "0" && e.key <= "9") || "+-*/().".includes(e.key)) {
@@ -67,8 +80,9 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
         elevation={12}
         sx={{
           width: "100%",
-          maxWidth: isDesktop ? 900 : 400, // ✅ más ancho en desktop
-          margin: "auto",                  // ✅ centrado real
+          maxWidth: isDesktop ? 900 : 400,
+          margin: "auto",
+          mt: { xs: 0, md: 4 }, // 👈 en desktop queda con un margen top
           p: 2,
           borderRadius: 4,
           background: darkMode
@@ -102,23 +116,66 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
             gap: 2,
           }}
         >
-          {/* Izquierda: display + keypad */}
+          {/* Izquierda */}
           <Box sx={{ flex: 2, display: "flex", flexDirection: "column", gap: 2 }}>
             <Display value={input} darkMode={darkMode} />
             <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
           </Box>
 
-          {/* Derecha: historial (solo en desktop visible al lado) */}
+          {/* Derecha (historial en desktop) */}
           {isDesktop && (
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Historial
+                </Typography>
+                <Button
+                  onClick={clearHistory}
+                  size="small"
+                  color="error"
+                  startIcon={<DeleteForever />}
+                >
+                  Borrar
+                </Button>
+              </Box>
               <History history={history} darkMode={darkMode} />
             </Box>
           )}
         </Box>
 
-        {/* En mobile el historial queda abajo */}
-        {!isDesktop && <History history={history} darkMode={darkMode} />}
+        {/* Historial en mobile */}
+        {!isDesktop && (
+          <Box mt={2}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 1,
+              }}
+            >
+              <Typography variant="subtitle1" fontWeight="bold">
+                Historial
+              </Typography>
+              <Button
+                onClick={clearHistory}
+                size="small"
+                color="error"
+                startIcon={<DeleteForever />}
+              >
+                Borrar
+              </Button>
+            </Box>
+            <History history={history} darkMode={darkMode} />
+          </Box>
+        )}
       </Paper>
     </motion.div>
   );
-    }
+}
