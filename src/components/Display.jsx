@@ -1,36 +1,25 @@
-import { Box, Typography } from "@mui/material";
-import { motion } from "framer-motion";
+import { Paper, Typography } from "@mui/material";
 
-export default function Display({ value, darkMode, animateResult }) {
+export default function Display({ expression, result }) {
   const formatNumber = (num) => {
-    if (!num) return "0";
-    if (!/^[0-9.]+$/.test(num)) return num; 
+    if (!num || isNaN(num)) return num;
     return Number(num).toLocaleString("en-US");
   };
 
   return (
-    <motion.div
-      animate={animateResult ? { scale: [1, 1.1, 1] } : {}}
-      transition={{ duration: 0.4 }}
+    <Paper
+      elevation={3}
+      sx={{
+        p: 2,
+        textAlign: "right",
+        mb: 2,
+        bgcolor: "background.paper",
+      }}
     >
-      <Box
-        sx={{
-          p: 2,
-          mb: 2,
-          borderRadius: 2,
-          bgcolor: darkMode ? "#121212" : "#f0f0f0",
-          textAlign: "right",
-          minHeight: 70,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "flex-end",
-          overflowX: "auto",
-        }}
-      >
-        <Typography variant="h5" sx={{ wordBreak: "break-word" }}>
-          {formatNumber(value)}
-        </Typography>
-      </Box>
-    </motion.div>
+      <Typography variant="h6">{expression || "0"}</Typography>
+      <Typography variant="h5" sx={{ color: "primary.main" }}>
+        {formatNumber(result)}
+      </Typography>
+    </Paper>
   );
 }
