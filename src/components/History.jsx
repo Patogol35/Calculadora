@@ -1,38 +1,24 @@
-import { Box, Typography, Paper } from "@mui/material";
+import { Paper, Typography, List, ListItem, Divider } from "@mui/material";
 
-export default function History({ history, darkMode, onSelect }) {
+export default function History({ history, onSelect }) {
   return (
-    <Paper
-      sx={{
-        p: 2,
-        mb: 2,
-        borderRadius: 2,
-        bgcolor: darkMode ? "rgba(255,255,255,0.05)" : "#fafafa",
-        maxHeight: 120,
-        overflowY: "auto",
-      }}
-    >
-      {history.length === 0 ? (
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Sin operaciones aún...
-        </Typography>
-      ) : (
-        history.map((item, index) => (
-          <Typography
-            key={index}
-            variant="body2"
-            sx={{
-              textAlign: "right",
-              wordBreak: "break-word",
-              cursor: "pointer",
-              "&:hover": { color: "primary.main" },
-            }}
-            onClick={() => onSelect(item)}
-          >
-            {item}
-          </Typography>
-        ))
-      )}
+    <Paper elevation={2} sx={{ p: 2, maxHeight: 200, overflow: "auto" }}>
+      <Typography variant="subtitle1">Historial</Typography>
+      <List>
+        {history.map((h, index) => (
+          <div key={index}>
+            <ListItem
+              button
+              onClick={() => onSelect(h.expr)}
+              sx={{ display: "flex", justifyContent: "space-between" }}
+            >
+              <span>{h.expr}</span>
+              <strong>{h.res}</strong>
+            </ListItem>
+            <Divider />
+          </div>
+        ))}
+      </List>
     </Paper>
   );
 }
