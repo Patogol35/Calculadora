@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, IconButton, Paper } from "@mui/material";
+import { Box, Typography, IconButton, Paper, useMediaQuery } from "@mui/material";
 import { DarkMode, LightMode } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import * as math from "mathjs";
@@ -10,14 +10,15 @@ import History from "./History";
 export default function Calculator({ theme, darkMode, setDarkMode }) {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState([]);
+  const isDesktop = useMediaQuery("(min-width: 768px)"); // ✅ detectar landscape/desktop
 
-  // ✅ cargar historial desde localStorage
+  // cargar historial desde localStorage
   useEffect(() => {
     const saved = localStorage.getItem("calc-history");
     if (saved) setHistory(JSON.parse(saved));
   }, []);
 
-  // ✅ guardar historial en localStorage
+  // guardar historial en localStorage
   useEffect(() => {
     localStorage.setItem("calc-history", JSON.stringify(history));
   }, [history]);
@@ -41,7 +42,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
     }
   };
 
-  // ✅ soporte teclado físico
+  // soporte teclado físico
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.key >= "0" && e.key <= "9") || "+-*/().".includes(e.key)) {
@@ -65,17 +66,15 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
       <Paper
         elevation={12}
         sx={{
-          width: { xs: "100%", sm: 380 },
-          maxWidth: "100%",
+          width: "100%",
+          maxWidth: isDesktop ? 900 : 400, // ✅ más ancho en desktop
+          margin: "auto",                  // ✅ centrado real
           p: 2,
           borderRadius: 4,
           background: darkMode
             ? "rgba(30,30,30,0.9)"
             : "rgba(255,255,255,0.95)",
           backdropFilter: "blur(16px)",
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
         }}
       >
         {/* Header */}
@@ -84,6 +83,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            mb: 2,
           }}
         >
           <Typography variant="h6" fontWeight="bold">
@@ -94,15 +94,31 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
           </IconButton>
         </Box>
 
-        {/* Display */}
-        <Display value={input} darkMode={darkMode} />
+        {/* Layout adaptativo */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: isDesktop ? "row" : "column",
+            gap: 2,
+          }}
+        >
+          {/* Izquierda: display + keypad */}
+          <Box sx={{ flex: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+            <Display value={input} darkMode={darkMode} />
+            <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
+          </Box>
 
-        {/* Teclado */}
-        <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
+          {/* Derecha: historial (solo en desktop visible al lado) */}
+          {isDesktop && (
+            <Box sx={{ flex: 1 }}>
+              <History history={history} darkMode={darkMode} />
+            </Box>
+          )}
+        </Box>
 
-        {/* Historial (colapsa en mobile) */}
-        <History history={history} darkMode={darkMode} />
+        {/* En mobile el historial queda abajo */}
+        {!isDesktop && <History history={history} darkMode={darkMode} />}
       </Paper>
     </motion.div>
   );
-}
+    }
