@@ -11,9 +11,11 @@ import * as math from "mathjs";
 import Display from "./Display";
 import Keypad from "./Keypad";
 import History from "./History";
+
 export default function Calculator({ theme, darkMode, setDarkMode }) {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState([]);
+
   const handleClick = (value) => {
     if (value === "=") {
       try {
@@ -32,6 +34,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
       setInput(input + value);
     }
   };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -66,10 +69,13 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
             {darkMode ? <LightMode /> : <DarkMode />}
           </IconButton>
         </Box>
+
         {/* Historial */}
         <History history={history} darkMode={darkMode} />
+
         {/* Display */}
         <Display value={input} darkMode={darkMode} />
+
         {/* Keypad */}
         <Keypad
           handleClick={handleClick}
