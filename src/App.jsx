@@ -20,7 +20,7 @@ export default function App() {
       <Box
         sx={{
           minHeight: "100vh",
-          width: "100%", // evita espacio extra a la derecha
+          width: "100%", // asegura que no haya espacio lateral
           display: "flex",
           justifyContent: "center",
           alignItems: { xs: "flex-start", md: "center" }, // arriba en móvil, centrado en desktop
@@ -28,15 +28,22 @@ export default function App() {
             ? "linear-gradient(135deg, #1f1c2c, #928dab)"
             : "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
           p: 2,
-          pt: { xs: 3, md: 0 }, // margen superior solo en móvil
+          pt: { xs: 3, md: 0 }, // margen superior en móvil
           overflowX: "hidden", // previene scroll horizontal
         }}
       >
-        <Calculator
-          theme={theme}
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
-        />
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: 400, // ancho máximo de la calculadora
+          }}
+        >
+          <Calculator
+            theme={theme}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+          />
+        </Box>
       </Box>
     </ThemeProvider>
   );
