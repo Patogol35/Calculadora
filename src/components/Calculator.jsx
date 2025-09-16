@@ -27,7 +27,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
         elevation={12}
         sx={{
           width: "100%",
-          maxWidth: isDesktop ? 900 : 400,
+          maxWidth: "1100px", // límite de ancho total
           margin: "auto",
           mt: { xs: 0, md: 4 },
           p: 2,
@@ -55,26 +55,44 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
           </IconButton>
         </Box>
 
-        {/* Layout */}
+        {/* Layout principal */}
         <Box
           sx={{
-            display: "flex",
-            flexDirection: isDesktop ? "row" : "column",
+            display: "grid",
+            gridTemplateColumns: isDesktop ? "2fr 1fr" : "1fr",
             gap: 2,
           }}
         >
-          <Box sx={{ flex: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* Calculadora */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
             <Display value={input} darkMode={darkMode} />
             <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
           </Box>
 
+          {/* Historial en sidebar (solo desktop) */}
           {isDesktop && (
-            <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1 }}>
+            <Paper
+              elevation={6}
+              sx={{
+                p: 2,
+                borderRadius: 3,
+                maxHeight: "500px",
+                overflowY: "auto",
+                bgcolor: darkMode ? "rgba(20,20,20,0.8)" : "rgba(245,245,245,0.9)",
+              }}
+            >
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  mb: 1,
                 }}
               >
                 <Typography variant="subtitle1" fontWeight="bold">
@@ -90,10 +108,11 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
                 </Button>
               </Box>
               <History history={history} darkMode={darkMode} setInput={setInput} />
-            </Box>
+            </Paper>
           )}
         </Box>
 
+        {/* Historial abajo (solo mobile) */}
         {!isDesktop && (
           <Box mt={2}>
             <Box
