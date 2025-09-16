@@ -5,6 +5,7 @@ import { formatExpression } from "../utils/formatExpression";
 export default function useCalculator() {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState([]);
+  const [lastWasResult, setLastWasResult] = useState(false); // 👈 nuevo estado
 
   // cargar historial
   useEffect(() => {
@@ -23,6 +24,7 @@ export default function useCalculator() {
       const result = math.evaluate(expr).toString();
       setHistory([`${input} = ${result}`, ...history.slice(0, 9)]);
       setInput(result);
+      setLastWasResult(true); // lo último fue resultado
     } catch (err) {
       setInput("Error");
       setTimeout(() => setInput(""), 1500);
@@ -34,10 +36,24 @@ export default function useCalculator() {
       calculate();
     } else if (value === "AC") {
       setInput("");
+      setLastWasResult(false);
     } else if (value === "DEL") {
       setInput((prev) => prev.slice(0, -1));
     } else {
-      setInput((prev) => prev + value);
+      setInput((prev) => {
+        if (lastWasResult) {
+          if (!isNaN(value)) {
+            // Si fue resultado y entra un número → reemplazar
+            setLastWasResult(false);
+            return value;
+          } else {
+            // Si fue resultado y entra un operador → continuar cálculo
+            setLastWasResult(false);
+            return prev + value;
+          }
+        }
+        return prev + value;
+      });
     }
   };
 
@@ -50,7 +66,17 @@ export default function useCalculator() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.key >= "0" && e.key <= "9") || "+-*/().".includes(e.key)) {
-        setInput((prev) => prev + e.key);
+        setInput((prev) => {
+          if (lastWasResult && e.key >= "0" && e.key <= "9") {
+            setLastWasResult(false);
+            return e.key; // número → reemplaza
+          } else if (lastWasResult && "+-*/".includes(e.key)) {
+            setLastWasResult(false);
+            return prev + e.key; // operador → continúa
+          }
+          setLastWasResult(false);
+          return prev + e.key;
+        });
       } else if (e.key === "Enter") {
         calculate();
       } else if (e.key === "Backspace") {
@@ -59,7 +85,7 @@ export default function useCalculator() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [calculate]);
+  }, [calculate, lastWasResult]);
 
   return { input, setInput, history, handleClick, clearHistory };
 }
