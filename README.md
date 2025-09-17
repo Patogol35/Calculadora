@@ -52,7 +52,7 @@ https://calculadorajorgepatricio.vercel.app/
 
 1. Clona el repositorio:
 
-https://github.com/Patogol35/Calculadora
+git clone https://github.com/Patogol35/Calculadora
 
 2. Ingresa a la carpeta del proyecto:
 
