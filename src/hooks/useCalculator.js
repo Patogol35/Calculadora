@@ -1,11 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import * as math from "mathjs";
 import { formatExpression } from "../utils/formatExpression";
+
+function useThrottle(fn, delay) {
+  const lastCall = useRef(0);
+  return (...args) => {
+    const now = Date.now();
+    if (now - lastCall.current >= delay) {
+      lastCall.current = now;
+      fn(...args);
+    }
+  };
+}
 
 export default function useCalculator() {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState([]);
-  const [lastWasResult, setLastWasResult] = useState(false); // 👈 nuevo estado
+  const [lastWasResult, setLastWasResult] = useState(false);
 
   // cargar historial
   useEffect(() => {
@@ -13,10 +24,14 @@ export default function useCalculator() {
     if (saved) setHistory(JSON.parse(saved));
   }, []);
 
-  // guardar historial
+  // guardar historial (optimizado con throttle 300ms)
+  const saveHistory = useThrottle((newHistory) => {
+    localStorage.setItem("calc-history", JSON.stringify(newHistory));
+  }, 300);
+
   useEffect(() => {
-    localStorage.setItem("calc-history", JSON.stringify(history));
-  }, [history]);
+    saveHistory(history);
+  }, [history, saveHistory]);
 
   const calculate = useCallback(() => {
     try {
@@ -24,10 +39,10 @@ export default function useCalculator() {
       const result = math.evaluate(expr).toString();
       setHistory([`${input} = ${result}`, ...history.slice(0, 9)]);
       setInput(result);
-      setLastWasResult(true); // lo último fue resultado
+      setLastWasResult(true);
     } catch (err) {
-      setInput("Error");
-      setTimeout(() => setInput(""), 1500);
+      setInput("Error"); // ❌ ahora no se borra solo
+      setLastWasResult(false);
     }
   }, [input, history]);
 
@@ -43,11 +58,9 @@ export default function useCalculator() {
       setInput((prev) => {
         if (lastWasResult) {
           if (!isNaN(value)) {
-            // Si fue resultado y entra un número → reemplazar
             setLastWasResult(false);
             return value;
           } else {
-            // Si fue resultado y entra un operador → continuar cálculo
             setLastWasResult(false);
             return prev + value;
           }
@@ -69,10 +82,10 @@ export default function useCalculator() {
         setInput((prev) => {
           if (lastWasResult && e.key >= "0" && e.key <= "9") {
             setLastWasResult(false);
-            return e.key; // número → reemplaza
+            return e.key;
           } else if (lastWasResult && "+-*/".includes(e.key)) {
             setLastWasResult(false);
-            return prev + e.key; // operador → continúa
+            return prev + e.key;
           }
           setLastWasResult(false);
           return prev + e.key;
