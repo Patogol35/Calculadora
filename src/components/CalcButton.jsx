@@ -1,7 +1,8 @@
 import { Button } from "@mui/material";
 import { motion } from "framer-motion";
+import React from "react";
 
-export default function CalcButton({ value, onClick, className = "" }) {
+function CalcButton({ value, onClick, className = "" }) {
   return (
     <motion.div whileTap={{ scale: 0.9 }}>
       <Button
@@ -22,3 +23,6 @@ export default function CalcButton({ value, onClick, className = "" }) {
     </motion.div>
   );
 }
+
+// ✅ memo evita rerenders innecesarios
+export default React.memo(CalcButton);
