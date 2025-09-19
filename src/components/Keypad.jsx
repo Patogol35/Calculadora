@@ -1,6 +1,6 @@
 import { Grid, Button, Collapse } from "@mui/material";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, memo } from "react";
 
 const basicButtons = [
   ["7", "8", "9", "/"],
@@ -16,9 +16,7 @@ const advancedButtons = [
   ["π", "e", "ln", "!"],
 ];
 
-export default function Keypad({ handleClick }) {
-  const [showAdvanced, setShowAdvanced] = useState(false);
-
+const KeyButton = memo(({ btn, handleClick }) => {
   const getColor = (btn) => {
     if (btn === "=") return "primary";
     if (["/", "*", "-", "+", "^", "√"].includes(btn)) return "secondary";
@@ -28,27 +26,35 @@ export default function Keypad({ handleClick }) {
   };
 
   return (
+    <motion.div whileTap={{ scale: 0.85 }}>
+      <Button
+        fullWidth
+        variant={btn === "=" ? "contained" : "outlined"}
+        color={getColor(btn)}
+        onClick={() => handleClick(btn)}
+        sx={{
+          height: { xs: 65, sm: 70 },
+          borderRadius: "16px",
+          fontWeight: "bold",
+          fontSize: "1.1rem",
+          textTransform: "none",
+        }}
+      >
+        {btn}
+      </Button>
+    </motion.div>
+  );
+});
+
+export default function Keypad({ handleClick }) {
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  return (
     <>
       <Grid container spacing={1}>
         {basicButtons.flat().map((btn, i) => (
           <Grid item xs={btn === "=" ? 6 : 3} key={i}>
-            <motion.div whileTap={{ scale: 0.85 }}>
-              <Button
-                fullWidth
-                variant={btn === "=" ? "contained" : "outlined"}
-                color={getColor(btn)}
-                onClick={() => handleClick(btn)}
-                sx={{
-                  height: { xs: 65, sm: 70 },
-                  borderRadius: "16px",
-                  fontWeight: "bold",
-                  fontSize: "1.1rem",
-                  textTransform: "none",
-                }}
-              >
-                {btn}
-              </Button>
-            </motion.div>
+            <KeyButton btn={btn} handleClick={handleClick} />
           </Grid>
         ))}
       </Grid>
@@ -66,23 +72,7 @@ export default function Keypad({ handleClick }) {
         <Grid container spacing={1}>
           {advancedButtons.flat().map((btn, i) => (
             <Grid item xs={3} key={i}>
-              <motion.div whileTap={{ scale: 0.85 }}>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  color="secondary"
-                  onClick={() => handleClick(btn)}
-                  sx={{
-                    height: { xs: 65, sm: 70 },
-                    borderRadius: "16px",
-                    fontWeight: "bold",
-                    fontSize: "1rem",
-                    textTransform: "none",
-                  }}
-                >
-                  {btn}
-                </Button>
-              </motion.div>
+              <KeyButton btn={btn} handleClick={handleClick} />
             </Grid>
           ))}
         </Grid>
