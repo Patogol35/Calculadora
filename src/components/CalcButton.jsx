@@ -24,5 +24,4 @@ function CalcButton({ value, onClick, className = "" }) {
   );
 }
 
-// ✅ memo evita rerenders innecesarios
 export default React.memo(CalcButton);
