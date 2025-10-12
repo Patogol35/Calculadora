@@ -41,7 +41,7 @@ export default function useCalculator() {
       setInput(result);
       setLastWasResult(true);
     } catch (err) {
-      setInput("Error"); // ❌ ahora no se borra solo
+      setInput("Error"); 
       setLastWasResult(false);
     }
   }, [input, history]);
