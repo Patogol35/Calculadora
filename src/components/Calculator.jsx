@@ -50,9 +50,22 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
           <Typography variant="h6" fontWeight="bold">
             Calculadora Jorge Patricio Santamaría Cherrez
           </Typography>
-          <IconButton onClick={() => setDarkMode(!darkMode)}>
-            {darkMode ? <LightMode /> : <DarkMode />}
-          </IconButton>
+          <IconButton
+  onClick={() => setDarkMode(!darkMode)}
+  sx={{
+    bgcolor: darkMode ? "#fdd835" : "#37474f", // amarillo si oscuro, gris si claro
+    color: darkMode ? "#000" : "#fff",
+    transition: "all 0.3s ease",
+    "&:hover": {
+      bgcolor: darkMode ? "#ffeb3b" : "#455a64",
+      transform: "scale(1.2)",
+    },
+    borderRadius: "50%", // botón redondo
+    p: 1.5, // tamaño más grande
+  }}
+>
+  {darkMode ? <LightMode fontSize="medium" /> : <DarkMode fontSize="medium" />}
+</IconButton>
         </Box>
 
         {/* Layout principal */}
