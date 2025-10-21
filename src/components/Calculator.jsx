@@ -52,19 +52,15 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
           </Typography>
           <IconButton
   onClick={() => setDarkMode(!darkMode)}
+  color="inherit"
+  disableRipple
   sx={{
-    bgcolor: darkMode ? "#fdd835" : "#37474f", // amarillo si oscuro, gris si claro
-    color: darkMode ? "#000" : "#fff",
-    transition: "all 0.3s ease",
-    "&:hover": {
-      bgcolor: darkMode ? "#ffeb3b" : "#455a64",
-      transform: "scale(1.2)",
-    },
-    borderRadius: "50%", // botón redondo
-    p: 1.5, // tamaño más grande
+    "&:hover": { backgroundColor: "transparent" }, // sin fondo al pasar hover
+    "&:focus": { outline: "none" },
+    transition: "color 0.3s ease", // transición suave
   }}
 >
-  {darkMode ? <LightMode fontSize="medium" /> : <DarkMode fontSize="medium" />}
+  {darkMode ? <LightMode /> : <DarkMode />}
 </IconButton>
         </Box>
 
