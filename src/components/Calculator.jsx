@@ -27,11 +27,12 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
         elevation={12}
         sx={{
           width: "100%",
-          maxWidth: "1100px", // límite de ancho total
-          margin: "auto",
+          maxWidth: "950px", 
+          margin: "0 auto",
           mt: { xs: 0, md: 4 },
           p: 2,
           borderRadius: 4,
+          overflow: "hidden", 
           background: darkMode
             ? "rgba(30,30,30,0.9)"
             : "rgba(255,255,255,0.95)",
@@ -50,26 +51,28 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
           <Typography variant="h6" fontWeight="bold">
             Calculadora Jorge Patricio Santamaría Cherrez
           </Typography>
+
           <IconButton
-  onClick={() => setDarkMode(!darkMode)}
-  color="inherit"
-  disableRipple
-  sx={{
-    "&:hover": { backgroundColor: "transparent" }, // sin fondo al pasar hover
-    "&:focus": { outline: "none" },
-    transition: "color 0.3s ease", // transición suave
-  }}
->
-  {darkMode ? <LightMode /> : <DarkMode />}
-</IconButton>
+            onClick={() => setDarkMode(!darkMode)}
+            color="inherit"
+            disableRipple
+            sx={{
+              "&:hover": { backgroundColor: "transparent" },
+              "&:focus": { outline: "none" },
+              transition: "color 0.3s ease",
+            }}
+          >
+            {darkMode ? <LightMode /> : <DarkMode />}
+          </IconButton>
         </Box>
 
         {/* Layout principal */}
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: isDesktop ? "2fr 1fr" : "1fr",
+            gridTemplateColumns: isDesktop ? "1.7fr 1fr" : "1fr", 
             gap: 2,
+            overflowX: "hidden", 
           }}
         >
           {/* Calculadora */}
@@ -84,7 +87,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
             <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
           </Box>
 
-          {/* Historial en sidebar (solo desktop) */}
+          {/* Historial en desktop */}
           {isDesktop && (
             <Paper
               elevation={6}
@@ -121,7 +124,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
           )}
         </Box>
 
-        {/* Historial abajo (solo mobile) */}
+        {/* Historial abajo en mobile */}
         {!isDesktop && (
           <Box mt={2}>
             <Box
