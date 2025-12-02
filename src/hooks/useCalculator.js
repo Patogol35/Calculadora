@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import * as math from "mathjs";
-import { formatExpression } from "../utils/formatExpression";
 
+// === Throttle util ===
 function useThrottle(fn, delay) {
   const lastCall = useRef(0);
   return (...args) => {
@@ -13,19 +13,49 @@ function useThrottle(fn, delay) {
   };
 }
 
+// === Expression Formatter ===
+// Limpia expresiones para evitar errores en math.evaluate
+function formatExpression(expr) {
+  let formatted = expr;
+
+  // Elimina espacios
+  formatted = formatted.replace(/\s+/g, "");
+
+  // Reemplaza comas por puntos
+  formatted = formatted.replace(/,/g, ".");
+
+  // Quita operadores duplicados tipo ++, --, **, //, +-, etc.
+  formatted = formatted.replace(/([+\-*/]){2,}/g, (m) => m.slice(-1));
+
+  // Quita punto decimal duplicado en un mismo número
+  formatted = formatted.replace(/(\.\d*)\./g, "$1");
+
+  // Corrige casos como (5)(3) → (5)*(3)
+  formatted = formatted.replace(/\)\(/g, ")*(");
+
+  // Evita expresiones que terminen con operador
+  formatted = formatted.replace(/[+\-*/.]$/, "");
+
+  // Evita expresiones que empiecen con operador no válido
+  formatted = formatted.replace(/^([*/.]+)/, "");
+
+  return formatted;
+}
+
+// === Main Hook ===
 export default function useCalculator() {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState([]);
   const [lastWasResult, setLastWasResult] = useState(false);
   const [error, setError] = useState(false);
 
-  // Load history
+  // === Load history ===
   useEffect(() => {
     const saved = localStorage.getItem("calc-history");
     if (saved) setHistory(JSON.parse(saved));
   }, []);
 
-  // Save history with throttle
+  // === Save history with throttle ===
   const saveHistory = useThrottle((newHistory) => {
     localStorage.setItem("calc-history", JSON.stringify(newHistory));
   }, 300);
@@ -34,15 +64,16 @@ export default function useCalculator() {
     saveHistory(history);
   }, [history, saveHistory]);
 
-  // Main calculation
+  // === Main calculation ===
   const calculate = useCallback(() => {
     try {
       setError(false);
-
       const expr = formatExpression(input);
+      if (!expr) return;
+
       const result = math.evaluate(expr).toString();
 
-      setHistory([`${input} = ${result}`, ...history.slice(0, 9)]);
+      setHistory([`${expr} = ${result}`, ...history.slice(0, 9)]);
       setInput(result);
       setLastWasResult(true);
     } catch (err) {
@@ -52,85 +83,101 @@ export default function useCalculator() {
     }
   }, [input, history]);
 
-  // Handle button clicks
+  // === Handle button clicks ===
   const handleClick = (value) => {
-    // Caso 1: Hay error y presiona un número → reiniciar
-    if (error && !isNaN(value)) {
-      setError(false);
-      setInput(value);
+    if (error) {
+      // Si hay error y presiona número → reinicia
+      if (!isNaN(value)) {
+        setError(false);
+        setInput(value);
+      } else if (value === "AC") {
+        setError(false);
+        setInput("");
+      } else {
+        // Cualquier otro valor borra el error
+        setError(false);
+        setInput("");
+      }
       return;
     }
 
-    // Caso 2: Hay error y presiona símbolo → limpiar antes
-    if (error) {
-      setError(false);
-      setInput("");
-    }
+    switch (value) {
+      case "=":
+        calculate();
+        break;
 
-    if (value === "=") {
-      calculate();
-    } else if (value === "AC") {
-      setInput("");
-      setError(false);
-      setLastWasResult(false);
-    } else if (value === "DEL") {
-      setInput((prev) => prev.slice(0, -1));
-    } else {
-      setInput((prev) => {
-        // Si el último fue resultado y ahora presiona número → reemplazar
-        if (lastWasResult) {
-          if (!isNaN(value)) {
-            setLastWasResult(false);
-            return value;
-          } else {
-            setLastWasResult(false);
-            return prev + value;
-          }
+      case "AC":
+        setInput("");
+        setError(false);
+        setLastWasResult(false);
+        break;
+
+      case "DEL":
+        if (error) {
+          setError(false);
+          setInput("");
+        } else {
+          setInput((prev) => prev.slice(0, -1));
         }
-        return prev + value;
-      });
+        break;
+
+      default:
+        setInput((prev) => {
+          // Si el último fue resultado y ahora presiona número → reemplaza
+          if (lastWasResult) {
+            setLastWasResult(false);
+            return !isNaN(value) ? value : prev + value;
+          }
+
+          const next = prev + value;
+          return formatExpression(next);
+        });
     }
   };
 
+  // === Clear history ===
   const clearHistory = () => {
     setHistory([]);
     localStorage.removeItem("calc-history");
   };
 
-  // Keyboard input
+  // === Keyboard input ===
   useEffect(() => {
     const handleKeyDown = (e) => {
       const key = e.key;
 
-      // Si hay error y presiona número
-      if (error && key >= "0" && key <= "9") {
-        setError(false);
-        setInput(key);
-        return;
-      }
-
-      // Si hay error y presiona otra cosa
       if (error) {
-        setError(false);
-        setInput("");
+        if (key >= "0" && key <= "9") {
+          setError(false);
+          setInput(key);
+        } else {
+          setError(false);
+          setInput("");
+        }
+        return;
       }
 
       if ((key >= "0" && key <= "9") || "+-*/().".includes(key)) {
         setInput((prev) => {
+          let next;
           if (lastWasResult && key >= "0" && key <= "9") {
-            setLastWasResult(false);
-            return key;
+            next = key;
           } else if (lastWasResult && "+-*/".includes(key)) {
-            setLastWasResult(false);
-            return prev + key;
+            next = prev + key;
+          } else {
+            next = prev + key;
           }
           setLastWasResult(false);
-          return prev + key;
+          return formatExpression(next);
         });
       } else if (key === "Enter") {
+        e.preventDefault();
         calculate();
       } else if (key === "Backspace") {
         setInput((prev) => prev.slice(0, -1));
+      } else if (key === "Escape") {
+        setInput("");
+        setError(false);
       }
     };
 
@@ -144,6 +191,6 @@ export default function useCalculator() {
     history,
     handleClick,
     clearHistory,
-    error, // <-- lo envías al componente principal por si quieres mostrar un Alert
+    error,
   };
 }
