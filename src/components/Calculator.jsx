@@ -1,4 +1,4 @@
-import {
+            import {
   Box,
   Typography,
   IconButton,
@@ -66,57 +66,74 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
           </IconButton>
         </Box>
 
-        {/* Contenedor display + teclado */}
+        {/* Layout principal */}
         <Box
           sx={{
-            width: "100%",       // 🔥 SOLUCIÓN: mismo ancho para Display y Keypad
-            display: "flex",
-            flexDirection: "column",
+            display: "grid",
+            gridTemplateColumns: isDesktop ? "1.7fr 1fr" : "1fr",
             gap: 2,
+            overflowX: "hidden",
           }}
         >
-          <Display value={input} darkMode={darkMode} />
-          <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
-        </Box>
-
-        {/* Historial en desktop */}
-        {isDesktop && (
-          <Paper
-            elevation={6}
+          {/* Contenedor Calculadora */}
+          <Box
             sx={{
-              p: 2,
-              borderRadius: 3,
-              maxHeight: "500px",
-              overflowY: "auto",
-              bgcolor: darkMode ? "rgba(20,20,20,0.8)" : "rgba(245,245,245,0.9)",
-              mt: 2,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              width: "100%",           // 🔥 FIX FINAL
+              boxSizing: "border-box",  // 🔥 Para asegurar ancho real
             }}
           >
-            <Box
+            <Display value={input} darkMode={darkMode} />
+            <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
+          </Box>
+
+          {/* Historial Desktop */}
+          {isDesktop && (
+            <Paper
+              elevation={6}
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 1,
+                p: 2,
+                borderRadius: 3,
+                maxHeight: "500px",
+                overflowY: "auto",
+                bgcolor: darkMode
+                  ? "rgba(20,20,20,0.8)"
+                  : "rgba(245,245,245,0.9)",
               }}
             >
-              <Typography variant="subtitle1" fontWeight="bold">
-                Historial
-              </Typography>
-              <Button
-                onClick={clearHistory}
-                size="small"
-                color="error"
-                startIcon={<DeleteForever />}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 1,
+                }}
               >
-                Borrar
-              </Button>
-            </Box>
-            <History history={history} darkMode={darkMode} setInput={setInput} />
-          </Paper>
-        )}
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Historial
+                </Typography>
+                <Button
+                  onClick={clearHistory}
+                  size="small"
+                  color="error"
+                  startIcon={<DeleteForever />}
+                >
+                  Borrar
+                </Button>
+              </Box>
 
-        {/* Historial en mobile */}
+              <History
+                history={history}
+                darkMode={darkMode}
+                setInput={setInput}
+              />
+            </Paper>
+          )}
+        </Box>
+
+        {/* Historial Mobile */}
         {!isDesktop && (
           <Box mt={2}>
             <Box
@@ -139,7 +156,12 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
                 Borrar
               </Button>
             </Box>
-            <History history={history} darkMode={darkMode} setInput={setInput} />
+
+            <History
+              history={history}
+              darkMode={darkMode}
+              setInput={setInput}
+            />
           </Box>
         )}
       </Paper>
