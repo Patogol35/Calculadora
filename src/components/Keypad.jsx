@@ -7,19 +7,19 @@ const basicButtons = [
   ["4", "5", "6", "*"],
   ["1", "2", "3", "-"],
   ["0", ".", "=", "+"],
-  ["(", ")", "^", "âˆš"],
+  ["(", ")", "^", "√"],
   ["AC", "DEL"],
 ];
 
 const advancedButtons = [
   ["sin", "cos", "tan", "log"],
-  ["Ï€", "e", "ln", "!"],
+  ["π", "e", "ln", "!"],
 ];
 
 const KeyButton = memo(({ btn, handleClick }) => {
   const getColor = (btn) => {
     if (btn === "=") return "primary";
-    if (["/", "*", "-", "+", "^", "âˆš"].includes(btn)) return "secondary";
+    if (["/", "*", "-", "+", "^", "√"].includes(btn)) return "secondary";
     if (btn === "AC") return "error";
     if (btn === "DEL") return "warning";
     return "inherit";
@@ -51,9 +51,15 @@ export default function Keypad({ handleClick }) {
 
   return (
     <>
-      {/* Renderizamos FILA POR FILA para que nunca se rompa */}
+      {/* ⭐ Botones básicos centrados */}
       {basicButtons.map((row, rowIndex) => (
-        <Grid container spacing={1} key={rowIndex} sx={{ mb: 1 }}>
+        <Grid
+          container
+          spacing={1}
+          key={rowIndex}
+          sx={{ mb: 1 }}
+          justifyContent="center"
+        >
           {row.map((btn, i) => (
             <Grid
               item
@@ -75,9 +81,16 @@ export default function Keypad({ handleClick }) {
         {showAdvanced ? "Ocultar funciones avanzadas" : "Funciones avanzadas"}
       </Button>
 
+      {/* ⭐ Botones avanzados centrados */}
       <Collapse in={showAdvanced} sx={{ mt: 1 }}>
         {advancedButtons.map((row, rowIndex) => (
-          <Grid container spacing={1} key={rowIndex} sx={{ mb: 1 }}>
+          <Grid
+            container
+            spacing={1}
+            key={rowIndex}
+            sx={{ mb: 1 }}
+            justifyContent="center"
+          >
             {row.map((btn, i) => (
               <Grid item xs={3} key={i}>
                 <KeyButton btn={btn} handleClick={handleClick} />
@@ -88,4 +101,4 @@ export default function Keypad({ handleClick }) {
       </Collapse>
     </>
   );
-         }
+}
