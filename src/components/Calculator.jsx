@@ -67,7 +67,6 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
             display: "grid",
             gridTemplateColumns: isDesktop ? "1.7fr 1fr" : "1fr",
             gap: 2,
-            overflowX: "hidden",
           }}
         >
           {/* Calculadora */}
@@ -76,22 +75,15 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
               display: "flex",
               flexDirection: "column",
               gap: 2,
-              alignItems: "center",           // 🔥 CENTRA TODO EN VERTICAL Y HORIZONTAL
+              alignItems: "center",        // 🔥 CENTRA TODO
             }}
           >
-            <Display value={input} darkMode={darkMode} />
-
-            {/* 🔥 CAJA DEL KEYPAD CENTRADA SIEMPRE */}
-            <Box
-              sx={{
-                maxWidth: 380,
-                width: "100%",
-                display: "flex",               // 🔥 CENTRADO REAL
-                justifyContent: "center",
-              }}
-            >
-              <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
+            <Box sx={{ width: "100%" }}>
+              <Display value={input} darkMode={darkMode} />
             </Box>
+
+            {/* KEYBOARD CENTRADO */}
+            <Keypad handleClick={handleClick} />
           </Box>
 
           {/* Historial en desktop */}
@@ -103,7 +95,9 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
                 borderRadius: 3,
                 maxHeight: "500px",
                 overflowY: "auto",
-                bgcolor: darkMode ? "rgba(20,20,20,0.8)" : "rgba(245,245,245,0.9)",
+                bgcolor: darkMode
+                  ? "rgba(20,20,20,0.8)"
+                  : "rgba(245,245,245,0.9)",
               }}
             >
               <Box
