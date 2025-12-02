@@ -1,4 +1,4 @@
-import { Grid, Button, Collapse } from "@mui/material";
+import { Grid, Button, Collapse, Box } from "@mui/material";
 import { motion } from "framer-motion";
 import { useState, memo } from "react";
 
@@ -50,8 +50,7 @@ export default function Keypad({ handleClick }) {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   return (
-    <>
-      {/* Renderizamos FILA POR FILA para que nunca se rompa */}
+    <Box sx={{ width: "100%" }}>  {/* 🔥 esto asegura que coincida con el Display */}
       {basicButtons.map((row, rowIndex) => (
         <Grid container spacing={1} key={rowIndex} sx={{ mb: 1 }}>
           {row.map((btn, i) => (
@@ -86,6 +85,6 @@ export default function Keypad({ handleClick }) {
           </Grid>
         ))}
       </Collapse>
-    </>
+    </Box>
   );
-          }
+}
