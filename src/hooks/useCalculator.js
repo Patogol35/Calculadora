@@ -65,33 +65,33 @@ export default function useCalculator() {
   }, [input]);
 
   // =======================
-  // APLICAR INPUT (unifica todo)
+  // APLICAR INPUT (corregido al 100%)
   // =======================
   function applyInput(value) {
-    // Si había error
-    if (error) {
-      setError(false);
-      return setInput(isNaN(value) ? "" : value);
-    }
-
-    // =======================
-    // ❗ REGLA NUEVA:
-    // No permitir iniciar con + * /
-    // Sí permitir iniciar con -
-    // =======================
-    if (input === "") {
-      if (value === "-") return setInput("-");
-      if ("+*/".includes(value)) return; // <-- ignorar
-    }
-
     setInput((prev) => {
+      // Si había error
+      if (error) {
+        setError(false);
+        return isNaN(value) ? "" : value;
+      }
+
+      // =======================
+      // ❗ REGLA DEFINITIVA:
+      // NO permitir iniciar con + * /
+      // SÍ permitir iniciar con -
+      // =======================
+      if (prev === "") {
+        if (value === "-") return "-";        // permitido
+        if ("+*/".includes(value)) return ""; // bloqueado
+        return value;                         // números o (
+      }
+
       // Si el último fue resultado
       if (lastWasResult) {
         setLastWasResult(false);
 
-        if (!isNaN(value)) return value;
-
-        return prev + value;
+        if (!isNaN(value)) return value; // reemplaza número
+        return prev + value;             // operador continúa
       }
 
       return formatExpression(prev + value);
@@ -127,9 +127,7 @@ export default function useCalculator() {
       const isValid =
         (key >= "0" && key <= "9") || "+-*/().".includes(key);
 
-      if (isValid) {
-        return applyInput(key);
-      }
+      if (isValid) return applyInput(key);
 
       if (key === "Enter") {
         e.preventDefault();
