@@ -2,22 +2,18 @@ import { useState, useEffect, useCallback } from "react";
 import * as math from "mathjs";
 
 // =======================
-// FORMAT EXPRESSION (solo limpieza, NO toca √)
+// FORMAT EXPRESSION
 // =======================
 function formatExpression(expr) {
   let formatted = expr.replace(/\s+/g, "").replace(/,/g, ".");
 
   // Reemplazar operadores dobles → solo dejar el último
-  formatted = formatted.replace(
-    /([+\-*/])([+\-*/])/g,
-    (m, prev, curr) => {
-      // Conservar "*-" y "/-"
-      if ((prev === "*" || prev === "/") && curr === "-") return prev + curr;
-      return curr;
-    }
-  );
+  formatted = formatted.replace(/([+\-*/])([+\-*/])/g, (m, prev, curr) => {
+    if ((prev === "*" || prev === "/") && curr === "-") return prev + curr;
+    return curr;
+  });
 
-  // Evitar más de un punto en un número
+  // Evitar ".."
   formatted = formatted.replace(/(\d*\.\d*)\./g, "$1");
 
   // (5)(3) → (5)*(3)
@@ -36,29 +32,24 @@ export default function useCalculator() {
   const [error, setError] = useState(false);
 
   // =======================
-  // Cargar historial
+  // Historial
   // =======================
   useEffect(() => {
     const saved = localStorage.getItem("calc-history");
     if (saved) setHistory(JSON.parse(saved));
   }, []);
 
-  // =======================
-  // Guardar historial
-  // =======================
   useEffect(() => {
     localStorage.setItem("calc-history", JSON.stringify(history));
   }, [history]);
 
   // =======================
-  // Calcular (SOLO aquí se convierte √ → sqrt())
+  // Calcular
   // =======================
   const calculate = useCallback(() => {
     try {
-      // Lo que ve el usuario
       const expr = formatExpression(input);
 
-      // Internamente convertir √ a sqrt()
       const mathExpr = expr
         .replace(/√(\d+(\.\d+)?)/g, "sqrt($1)")
         .replace(/√\(/g, "sqrt(");
@@ -79,49 +70,38 @@ export default function useCalculator() {
   // =======================
   // APLICAR INPUT
   // =======================
-  function applyInput(value) {
-    // Si había error
+  const applyInput = (value) => {
     if (error) {
       setError(false);
-      return setInput(/^[0-9]$/.test(value) ? value : "");
+      return setInput(/^\d$/.test(value) ? value : "");
     }
 
     // No permitir iniciar con + * /
-    if (input === "") {
-      if (value === "-") return setInput("-");
-      if ("+*/".includes(value)) return;
-    }
+    if (!input && "+*/".includes(value)) return;
 
     setInput((prev) => {
       if (lastWasResult) {
         setLastWasResult(false);
-
-        if (!isNaN(value)) return value;
-
-        return prev + value;
+        return isNaN(value) ? prev + value : value;
       }
-
       return formatExpression(prev + value);
     });
-  }
+  };
 
   // =======================
-  // Click en botones
+  // Click botones
   // =======================
   const handleClick = (value) => {
-    switch (value) {
-      case "=":
-        return calculate();
-      case "AC":
-        setInput("");
-        setError(false);
-        setLastWasResult(false);
-        return;
-      case "DEL":
-        return setInput((prev) => prev.slice(0, -1));
-      default:
-        return applyInput(value);
+    if (value === "=") return calculate();
+    if (value === "AC") {
+      setInput("");
+      setError(false);
+      setLastWasResult(false);
+      return;
     }
+    if (value === "DEL") return setInput((p) => p.slice(0, -1));
+
+    applyInput(value);
   };
 
   // =======================
@@ -131,21 +111,15 @@ export default function useCalculator() {
     const handleKeyDown = (e) => {
       const key = e.key;
 
-      const isValid =
-        (key >= "0" && key <= "9") || "+-*/().√".includes(key);
-
-      if (isValid) {
+      if (/^[0-9]$/.test(key) || "+-*/().√".includes(key))
         return applyInput(key);
-      }
 
       if (key === "Enter") {
         e.preventDefault();
         return calculate();
       }
 
-      if (key === "Backspace") {
-        return setInput((prev) => prev.slice(0, -1));
-      }
+      if (key === "Backspace") return setInput((p) => p.slice(0, -1));
 
       if (key === "Escape") {
         setInput("");
