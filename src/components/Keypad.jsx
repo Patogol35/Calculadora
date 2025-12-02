@@ -33,7 +33,7 @@ const KeyButton = memo(({ btn, handleClick }) => {
         color={getColor(btn)}
         onClick={() => handleClick(btn)}
         sx={{
-          height: { xs: 65, sm: 70 },
+          height: 65,
           borderRadius: "16px",
           fontWeight: "bold",
           fontSize: "1.1rem",
@@ -51,39 +51,40 @@ export default function Keypad({ handleClick }) {
 
   return (
     <>
-      {/* --- BOTONES BÁSICOS --- */}
-      <Grid container spacing={1}>
-        {basicButtons.flat().map((btn, i) => (
-          <Grid
-            item
-            xs={btn === "=" ? 6 : 3}
-            sm={btn === "=" ? 6 : 3}   // 🔥 Mantiene el mismo orden en horizontal
-            key={i}
-          >
-            <KeyButton btn={btn} handleClick={handleClick} />
-          </Grid>
-        ))}
-      </Grid>
+      {/* Renderizamos FILA POR FILA para que nunca se rompa */}
+      {basicButtons.map((row, rowIndex) => (
+        <Grid container spacing={1} key={rowIndex} sx={{ mb: 1 }}>
+          {row.map((btn, i) => (
+            <Grid
+              item
+              xs={btn === "=" ? 6 : row.length === 2 ? 6 : 3}
+              key={i}
+            >
+              <KeyButton btn={btn} handleClick={handleClick} />
+            </Grid>
+          ))}
+        </Grid>
+      ))}
 
-      {/* --- BOTÓN PARA MOSTRAR AVANZADOS --- */}
       <Button
         fullWidth
         variant="text"
-        sx={{ mt: 2 }}
+        sx={{ mt: 1 }}
         onClick={() => setShowAdvanced(!showAdvanced)}
       >
         {showAdvanced ? "Ocultar funciones avanzadas" : "Funciones avanzadas"}
       </Button>
 
-      {/* --- BOTONES AVANZADOS --- */}
       <Collapse in={showAdvanced} sx={{ mt: 1 }}>
-        <Grid container spacing={1}>
-          {advancedButtons.flat().map((btn, i) => (
-            <Grid item xs={3} sm={3} key={i}>
-              <KeyButton btn={btn} handleClick={handleClick} />
-            </Grid>
-          ))}
-        </Grid>
+        {advancedButtons.map((row, rowIndex) => (
+          <Grid container spacing={1} key={rowIndex} sx={{ mb: 1 }}>
+            {row.map((btn, i) => (
+              <Grid item xs={3} key={i}>
+                <KeyButton btn={btn} handleClick={handleClick} />
+              </Grid>
+            ))}
+          </Grid>
+        ))}
       </Collapse>
     </>
   );
