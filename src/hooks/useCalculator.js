@@ -1,104 +1,108 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import * as math from "mathjs";
-import { formatExpression } from "../utils/formatExpression";
-
-function useThrottle(fn, delay) {
-  const lastCall = useRef(0);
-  return (...args) => {
-    const now = Date.now();
-    if (now - lastCall.current >= delay) {
-      lastCall.current = now;
-      fn(...args);
-    }
-  };
-}
+import { useState } from "react";
+import { evaluate } from "mathjs";
 
 export default function useCalculator() {
-  const [input, setInput] = useState("");
+  const [expression, setExpression] = useState("");
+  const [result, setResult] = useState("");
   const [history, setHistory] = useState([]);
-  const [lastWasResult, setLastWasResult] = useState(false);
+  const [mode, setMode] = useState("deg"); // deg | rad
 
-  // cargar historial
-  useEffect(() => {
-    const saved = localStorage.getItem("calc-history");
-    if (saved) setHistory(JSON.parse(saved));
-  }, []);
+  // ---------------------------------------
+  // Insertar texto en la expresión
+  // ---------------------------------------
+  const input = (value) => {
+    setExpression((prev) => prev + value);
+  };
 
-  // guardar historial (optimizado con throttle 300ms)
-  const saveHistory = useThrottle((newHistory) => {
-    localStorage.setItem("calc-history", JSON.stringify(newHistory));
-  }, 300);
+  // ---------------------------------------
+  // Borrar todo
+  // ---------------------------------------
+  const clear = () => {
+    setExpression("");
+    setResult("");
+  };
 
-  useEffect(() => {
-    saveHistory(history);
-  }, [history, saveHistory]);
+  // ---------------------------------------
+  // Borrar último carácter
+  // ---------------------------------------
+  const backspace = () => {
+    setExpression((prev) => prev.slice(0, -1));
+  };
 
-  const calculate = useCallback(() => {
+  // ---------------------------------------
+  // Factorial (!)
+  // ---------------------------------------
+  const factorial = (n) => {
+    if (n < 0) return NaN;
+    if (n === 0) return 1;
+    let f = 1;
+    for (let i = 1; i <= n; i++) f *= i;
+    return f;
+  };
+
+  // ---------------------------------------
+  // Evaluar la expresión
+  // ---------------------------------------
+  const calculate = () => {
     try {
-      const expr = formatExpression(input);
-      const result = math.evaluate(expr).toString();
-      setHistory([`${input} = ${result}`, ...history.slice(0, 9)]);
-      setInput(result);
-      setLastWasResult(true);
-    } catch (err) {
-      setInput("Error"); 
-      setLastWasResult(false);
-    }
-  }, [input, history]);
+      let exp = expression;
 
-  const handleClick = (value) => {
-    if (value === "=") {
-      calculate();
-    } else if (value === "AC") {
-      setInput("");
-      setLastWasResult(false);
-    } else if (value === "DEL") {
-      setInput((prev) => prev.slice(0, -1));
-    } else {
-      setInput((prev) => {
-        if (lastWasResult) {
-          if (!isNaN(value)) {
-            setLastWasResult(false);
-            return value;
-          } else {
-            setLastWasResult(false);
-            return prev + value;
-          }
-        }
-        return prev + value;
-      });
-    }
-  };
+      // Reemplazos para mathjs
+      exp = exp.replace(/π/g, "pi");
+      exp = exp.replace(/√/g, "sqrt");
+      exp = exp.replace(/×/g, "*");
+      exp = exp.replace(/÷/g, "/");
 
-  const clearHistory = () => {
-    setHistory([]);
-    localStorage.removeItem("calc-history");
-  };
+      // Manejo de factorial
+      exp = exp.replace(/(\d+)!/g, "factorial($1)");
 
-  // teclado físico
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ((e.key >= "0" && e.key <= "9") || "+-*/().".includes(e.key)) {
-        setInput((prev) => {
-          if (lastWasResult && e.key >= "0" && e.key <= "9") {
-            setLastWasResult(false);
-            return e.key;
-          } else if (lastWasResult && "+-*/".includes(e.key)) {
-            setLastWasResult(false);
-            return prev + e.key;
-          }
-          setLastWasResult(false);
-          return prev + e.key;
-        });
-      } else if (e.key === "Enter") {
-        calculate();
-      } else if (e.key === "Backspace") {
-        setInput((prev) => prev.slice(0, -1));
+      // Función factorial para mathjs
+      const scope = {
+        factorial: factorial,
+        deg: (x) => x * (Math.PI / 180),
+      };
+
+      // Transformar sin() / cos() / tan() según modo
+      if (mode === "deg") {
+        exp = exp.replace(/sin\(/g, "sin(deg(");
+        exp = exp.replace(/cos\(/g, "cos(deg(");
+        exp = exp.replace(/tan\(/g, "tan(deg(");
       }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [calculate, lastWasResult]);
 
-  return { input, setInput, history, handleClick, clearHistory };
+      // Evaluar
+      const evaluated = evaluate(exp, scope);
+
+      setResult(evaluated.toString());
+
+      // Guardar en historial
+      const entry = {
+        exp: expression,
+        res: evaluated.toString(),
+        id: Date.now(),
+      };
+      setHistory((prev) => [entry, ...prev]);
+
+    } catch (err) {
+      setResult("Error");
+    }
+  };
+
+  // ---------------------------------------
+  // Cambiar entre grados y radianes
+  // ---------------------------------------
+  const toggleMode = () => {
+    setMode((m) => (m === "deg" ? "rad" : "deg"));
+  };
+
+  return {
+    expression,
+    result,
+    history,
+    mode,
+    input,
+    clear,
+    backspace,
+    calculate,
+    toggleMode,
+  };
 }
