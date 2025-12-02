@@ -83,8 +83,17 @@ Calculadora Jorge Patricio SantamarÃ­a Cherrez
           gap: 2,  
         }}  
       >  
-        <Display value={input} darkMode={darkMode} />  
-        <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />  
+        <Display value={input} darkMode={darkMode} />
+
+<Box
+  sx={{
+    width: "100%",
+    maxWidth: 350,    
+    mx: "auto",        
+  }}
+>
+  <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
+</Box>  
       </Box>  
 
       {/* Historial en desktop */}  
