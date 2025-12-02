@@ -33,7 +33,7 @@ const KeyButton = memo(({ btn, handleClick }) => {
         color={getColor(btn)}
         onClick={() => handleClick(btn)}
         sx={{
-          height: 60,
+          height: 65,
           borderRadius: "16px",
           fontWeight: "bold",
           fontSize: "1.1rem",
@@ -53,28 +53,18 @@ export default function Keypad({ handleClick }) {
     <Box
       sx={{
         width: "100%",
-        maxWidth: 360,        // 🔥 FIX real: keypad siempre del mismo tamaño
-        mx: "auto",           // 🔥 Centrado siempre
+        maxWidth: 360,          // 🔥 TAMAÑO FIJO = NO SE DESORDENA
+        mx: "auto",             // 🔥 SIEMPRE CENTRADO
       }}
     >
-      {/* Grid de botones centrado */}
-      <Grid
-        container
-        spacing={1}
-        columns={4}            // 🔥 Fuerza siempre 4 columnas reales
-      >
+      <Grid container spacing={1}>
         {basicButtons.flat().map((btn, i) => (
-          <Grid
-            item
-            xs={btn === "=" ? 2 : 1}   // 1 columna normal, "=" ocupa 2
-            key={i}
-          >
+          <Grid item xs={3} key={i}>
             <KeyButton btn={btn} handleClick={handleClick} />
           </Grid>
         ))}
       </Grid>
 
-      {/* Botón más avanzado */}
       <Button
         fullWidth
         variant="text"
@@ -84,11 +74,10 @@ export default function Keypad({ handleClick }) {
         {showAdvanced ? "Ocultar funciones avanzadas" : "Funciones avanzadas"}
       </Button>
 
-      {/* Avanzados */}
       <Collapse in={showAdvanced} sx={{ mt: 1 }}>
-        <Grid container spacing={1} columns={4}>
+        <Grid container spacing={1}>
           {advancedButtons.flat().map((btn, i) => (
-            <Grid item xs={1} key={i}>
+            <Grid item xs={3} key={i}>
               <KeyButton btn={btn} handleClick={handleClick} />
             </Grid>
           ))}
