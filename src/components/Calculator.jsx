@@ -27,12 +27,12 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
         elevation={12}
         sx={{
           width: "100%",
-          maxWidth: "950px", 
+          maxWidth: "950px",
           margin: "0 auto",
           mt: { xs: 0, md: 4 },
           p: 2,
           borderRadius: 4,
-          overflow: "hidden", 
+          overflow: "hidden",
           background: darkMode
             ? "rgba(30,30,30,0.9)"
             : "rgba(255,255,255,0.95)",
@@ -70,9 +70,9 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: isDesktop ? "1.7fr 1fr" : "1fr", 
+            gridTemplateColumns: isDesktop ? "1.7fr 1fr" : "1fr",
             gap: 2,
-            overflowX: "hidden", 
+            overflowX: "hidden",
           }}
         >
           {/* Calculadora */}
@@ -84,7 +84,17 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
             }}
           >
             <Display value={input} darkMode={darkMode} />
-            <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
+
+            {/* 🔥 FIX: prevenir desorden del keypad en horizontal */}
+            <Box
+              sx={{
+                maxWidth: 380,
+                width: "100%",
+                mx: "auto",
+              }}
+            >
+              <Keypad handleClick={handleClick} darkMode={darkMode} theme={theme} />
+            </Box>
           </Box>
 
           {/* Historial en desktop */}
