@@ -51,14 +51,21 @@ export default function Keypad({ handleClick }) {
 
   return (
     <>
+      {/* --- BOTONES BÁSICOS --- */}
       <Grid container spacing={1}>
         {basicButtons.flat().map((btn, i) => (
-          <Grid item xs={btn === "=" ? 6 : 3} key={i}>
+          <Grid
+            item
+            xs={btn === "=" ? 6 : 3}
+            sm={btn === "=" ? 6 : 3}   // 🔥 Mantiene el mismo orden en horizontal
+            key={i}
+          >
             <KeyButton btn={btn} handleClick={handleClick} />
           </Grid>
         ))}
       </Grid>
 
+      {/* --- BOTÓN PARA MOSTRAR AVANZADOS --- */}
       <Button
         fullWidth
         variant="text"
@@ -68,10 +75,11 @@ export default function Keypad({ handleClick }) {
         {showAdvanced ? "Ocultar funciones avanzadas" : "Funciones avanzadas"}
       </Button>
 
+      {/* --- BOTONES AVANZADOS --- */}
       <Collapse in={showAdvanced} sx={{ mt: 1 }}>
         <Grid container spacing={1}>
           {advancedButtons.flat().map((btn, i) => (
-            <Grid item xs={3} key={i}>
+            <Grid item xs={3} sm={3} key={i}>
               <KeyButton btn={btn} handleClick={handleClick} />
             </Grid>
           ))}
