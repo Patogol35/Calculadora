@@ -16,6 +16,15 @@ const advancedButtons = [
   ["π", "e", "ln", "!"],
 ];
 
+const cleanValue = (btn) => {
+  if (btn === "√") return "√(";          // abrir paréntesis automáticamente
+  if (["sin", "cos", "tan", "log", "ln"].includes(btn)) return btn + "(";
+  if (btn === "π") return "π";
+  if (btn === "e") return "e";
+  if (btn === "!") return "!";
+  return btn;
+};
+
 const getColor = (btn) => {
   if (btn === "=") return "primary";
   if (["/", "*", "-", "+", "^", "√"].includes(btn)) return "secondary";
@@ -30,7 +39,7 @@ const KeyButton = memo(({ btn, handleClick }) => (
       fullWidth
       variant={btn === "=" ? "contained" : "outlined"}
       color={getColor(btn)}
-      onClick={() => handleClick(btn)}
+      onClick={() => handleClick(cleanValue(btn))}
       sx={{
         height: 65,
         borderRadius: "16px",
