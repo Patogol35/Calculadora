@@ -27,7 +27,7 @@ transition={{ duration: 0.5 }}
 elevation={12}
 sx={{
 width: "100%",
-maxWidth: "500px",
+maxWidth: "950px",
 margin: "0 auto",
 mt: { xs: 0, md: 4 },
 p: 2,
