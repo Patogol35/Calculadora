@@ -1,4 +1,4 @@
-import { Grid, Button, Collapse, Box } from "@mui/material";
+import { Grid, Button, Collapse } from "@mui/material";
 import { motion } from "framer-motion";
 import { useState, memo } from "react";
 
@@ -50,7 +50,8 @@ export default function Keypad({ handleClick }) {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   return (
-    <Box sx={{ width: "100%" }}>  {/* 🔥 esto asegura que coincida con el Display */}
+    <>
+      {/* Botones básicos */}
       {basicButtons.map((row, rowIndex) => (
         <Grid container spacing={1} key={rowIndex} sx={{ mb: 1 }}>
           {row.map((btn, i) => (
@@ -65,6 +66,7 @@ export default function Keypad({ handleClick }) {
         </Grid>
       ))}
 
+      {/* Toggle avanzado */}
       <Button
         fullWidth
         variant="text"
@@ -74,6 +76,7 @@ export default function Keypad({ handleClick }) {
         {showAdvanced ? "Ocultar funciones avanzadas" : "Funciones avanzadas"}
       </Button>
 
+      {/* Botones avanzados */}
       <Collapse in={showAdvanced} sx={{ mt: 1 }}>
         {advancedButtons.map((row, rowIndex) => (
           <Grid container spacing={1} key={rowIndex} sx={{ mb: 1 }}>
@@ -85,6 +88,6 @@ export default function Keypad({ handleClick }) {
           </Grid>
         ))}
       </Collapse>
-    </Box>
+    </>
   );
 }
