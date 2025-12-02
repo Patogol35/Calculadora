@@ -16,6 +16,16 @@ function formatExpression(expr) {
   // Convertir (5)(3) → (5)*(3)
   formatted = formatted.replace(/\)\(/g, ")*(");
 
+  // ================================
+  // ✔️ Soporte para raíz cuadrada
+  // ================================
+
+  // √9 → sqrt(9)
+  formatted = formatted.replace(/√(\d+(\.\d+)?)/g, "sqrt($1)");
+
+  // √(3+5) → sqrt(3+5)
+  formatted = formatted.replace(/√\(/g, "sqrt(");
+
   return formatted;
 }
 
@@ -65,7 +75,7 @@ export default function useCalculator() {
   }, [input]);
 
   // =======================
-  // APLICAR INPUT (unifica todo)
+  // APLICAR INPUT
   // =======================
   function applyInput(value) {
     // Si había error
@@ -74,18 +84,13 @@ export default function useCalculator() {
       return setInput(isNaN(value) ? "" : value);
     }
 
-    // =======================
-    // ❗ REGLA NUEVA:
     // No permitir iniciar con + * /
-    // Sí permitir iniciar con -
-    // =======================
     if (input === "") {
       if (value === "-") return setInput("-");
-      if ("+*/".includes(value)) return; // <-- ignorar
+      if ("+*/".includes(value)) return;
     }
 
     setInput((prev) => {
-      // Si el último fue resultado
       if (lastWasResult) {
         setLastWasResult(false);
 
@@ -125,7 +130,7 @@ export default function useCalculator() {
       const key = e.key;
 
       const isValid =
-        (key >= "0" && key <= "9") || "+-*/().".includes(key);
+        (key >= "0" && key <= "9") || "+-*/().√".includes(key);
 
       if (isValid) {
         return applyInput(key);
@@ -166,4 +171,4 @@ export default function useCalculator() {
     clearHistory,
     error,
   };
-}
+        }
