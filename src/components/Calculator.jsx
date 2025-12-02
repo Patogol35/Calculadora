@@ -75,7 +75,7 @@ export default function Calculator({ theme, darkMode, setDarkMode }) {
           }}
         >
           <Typography variant="h6" fontWeight="bold">
-            Autor:Jorge Patricio Santamaría Cherrez
+            Autor: Jorge Patricio Santamaría Cherrez
           </Typography>
 
           <IconButton
