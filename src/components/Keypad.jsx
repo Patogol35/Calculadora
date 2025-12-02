@@ -7,19 +7,19 @@ const basicButtons = [
   ["4", "5", "6", "*"],
   ["1", "2", "3", "-"],
   ["0", ".", "=", "+"],
-  ["(", ")", "^", "√"],
+  ["(", ")", "^", "âˆš"],
   ["AC", "DEL"],
 ];
 
 const advancedButtons = [
   ["sin", "cos", "tan", "log"],
-  ["π", "e", "ln", "!"],
+  ["Ï€", "e", "ln", "!"],
 ];
 
 const KeyButton = memo(({ btn, handleClick }) => {
   const getColor = (btn) => {
     if (btn === "=") return "primary";
-    if (["/", "*", "-", "+", "^", "√"].includes(btn)) return "secondary";
+    if (["/", "*", "-", "+", "^", "âˆš"].includes(btn)) return "secondary";
     if (btn === "AC") return "error";
     if (btn === "DEL") return "warning";
     return "inherit";
@@ -51,7 +51,7 @@ export default function Keypad({ handleClick }) {
 
   return (
     <>
-      {/* Botones básicos */}
+      {/* Renderizamos FILA POR FILA para que nunca se rompa */}
       {basicButtons.map((row, rowIndex) => (
         <Grid container spacing={1} key={rowIndex} sx={{ mb: 1 }}>
           {row.map((btn, i) => (
@@ -66,7 +66,6 @@ export default function Keypad({ handleClick }) {
         </Grid>
       ))}
 
-      {/* Toggle avanzado */}
       <Button
         fullWidth
         variant="text"
@@ -76,7 +75,6 @@ export default function Keypad({ handleClick }) {
         {showAdvanced ? "Ocultar funciones avanzadas" : "Funciones avanzadas"}
       </Button>
 
-      {/* Botones avanzados */}
       <Collapse in={showAdvanced} sx={{ mt: 1 }}>
         {advancedButtons.map((row, rowIndex) => (
           <Grid container spacing={1} key={rowIndex} sx={{ mb: 1 }}>
@@ -90,4 +88,4 @@ export default function Keypad({ handleClick }) {
       </Collapse>
     </>
   );
-}
+         }
