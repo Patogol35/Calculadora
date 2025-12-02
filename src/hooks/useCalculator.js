@@ -2,29 +2,26 @@ import { useState, useEffect, useCallback } from "react";
 import * as math from "mathjs";
 
 // =======================
-// FORMAT EXPRESSION
+// FORMAT EXPRESSION (solo limpieza, NO toca √)
 // =======================
 function formatExpression(expr) {
   let formatted = expr.replace(/\s+/g, "").replace(/,/g, ".");
 
   // Reemplazar operadores dobles → solo dejar el último
-  formatted = formatted.replace(/([+\-*/])([+\-*/])/g, (_, prev, curr) => curr);
+  formatted = formatted.replace(
+    /([+\-*/])([+\-*/])/g,
+    (m, prev, curr) => {
+      // Conservar "*-" y "/-"
+      if ((prev === "*" || prev === "/") && curr === "-") return prev + curr;
+      return curr;
+    }
+  );
 
-  // Evitar más de un punto en el mismo número
+  // Evitar más de un punto en un número
   formatted = formatted.replace(/(\d*\.\d*)\./g, "$1");
 
-  // Convertir (5)(3) → (5)*(3)
+  // (5)(3) → (5)*(3)
   formatted = formatted.replace(/\)\(/g, ")*(");
-
-  // ================================
-  // ✔️ Soporte para raíz cuadrada
-  // ================================
-
-  // √9 → sqrt(9)
-  formatted = formatted.replace(/√(\d+(\.\d+)?)/g, "sqrt($1)");
-
-  // √(3+5) → sqrt(3+5)
-  formatted = formatted.replace(/√\(/g, "sqrt(");
 
   return formatted;
 }
@@ -54,14 +51,19 @@ export default function useCalculator() {
   }, [history]);
 
   // =======================
-  // Calcular
+  // Calcular (SOLO aquí se convierte √ → sqrt())
   // =======================
   const calculate = useCallback(() => {
     try {
+      // Lo que ve el usuario
       const expr = formatExpression(input);
-      if (!expr) return;
 
-      const result = math.evaluate(expr).toString();
+      // Internamente convertir √ a sqrt()
+      const mathExpr = expr
+        .replace(/√(\d+(\.\d+)?)/g, "sqrt($1)")
+        .replace(/√\(/g, "sqrt(");
+
+      const result = math.evaluate(mathExpr).toString();
 
       setHistory((h) => [`${expr} = ${result}`, ...h].slice(0, 10));
       setInput(result);
@@ -81,7 +83,7 @@ export default function useCalculator() {
     // Si había error
     if (error) {
       setError(false);
-      return setInput(isNaN(value) ? "" : value);
+      return setInput(/^[0-9]$/.test(value) ? value : "");
     }
 
     // No permitir iniciar con + * /
@@ -171,4 +173,4 @@ export default function useCalculator() {
     clearHistory,
     error,
   };
-        }
+}
