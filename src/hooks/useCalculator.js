@@ -65,7 +65,7 @@ export default function useCalculator() {
   }, [input]);
 
   // =======================
-  // FUNCIÓN CENTRAL — evita duplicar
+  // APLICAR INPUT (unifica todo)
   // =======================
   function applyInput(value) {
     // Si había error
@@ -74,19 +74,26 @@ export default function useCalculator() {
       return setInput(isNaN(value) ? "" : value);
     }
 
+    // =======================
+    // ❗ REGLA NUEVA:
+    // No permitir iniciar con + * /
+    // Sí permitir iniciar con -
+    // =======================
+    if (input === "") {
+      if (value === "-") return setInput("-");
+      if ("+*/".includes(value)) return; // <-- ignorar
+    }
+
     setInput((prev) => {
       // Si el último fue resultado
       if (lastWasResult) {
         setLastWasResult(false);
 
-        // Número → reemplaza
         if (!isNaN(value)) return value;
 
-        // Operador → continúa expresión
         return prev + value;
       }
 
-      // Normal input
       return formatExpression(prev + value);
     });
   }
@@ -117,11 +124,10 @@ export default function useCalculator() {
     const handleKeyDown = (e) => {
       const key = e.key;
 
-      // Bloques válidos
-      const valid =
+      const isValid =
         (key >= "0" && key <= "9") || "+-*/().".includes(key);
 
-      if (valid) {
+      if (isValid) {
         return applyInput(key);
       }
 
@@ -137,7 +143,6 @@ export default function useCalculator() {
       if (key === "Escape") {
         setInput("");
         setError(false);
-        return;
       }
     };
 
