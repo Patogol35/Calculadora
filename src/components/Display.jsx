@@ -4,6 +4,7 @@ export default function Display({ value, darkMode }) {
   return (
     <Box
       sx={{
+        width: "100%",              // ⬅️ Hace que coincida exactamente con el teclado
         p: 2,
         mb: 2,
         borderRadius: 2,
